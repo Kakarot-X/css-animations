@@ -40,9 +40,12 @@ const Navbar = ({ user, onLogout }) => {
   };
 
   const handleUserClick = (userId) => {
-    navigate(`/profile/${userId}`);
-    setSearchQuery("");
     setShowResults(false);
+    setSearchQuery("");
+    setTimeout(() => {
+      navigate(`/profile/${userId}`);
+      window.location.reload();
+    }, 100);
   };
 
   return (
@@ -64,18 +67,22 @@ const Navbar = ({ user, onLogout }) => {
               placeholder="Search users..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              onBlur={() => setTimeout(() => setShowResults(false), 200)}
+              onBlur={() => setTimeout(() => setShowResults(false), 300)}
+              onFocus={() => searchQuery && setShowResults(true)}
               className="pl-9"
             />
           </div>
           {showResults && searchResults.length > 0 && (
-            <div className="absolute top-full mt-2 w-full bg-background border rounded-lg shadow-lg max-h-64 overflow-y-auto">
+            <div className="absolute top-full mt-2 w-full bg-background border rounded-lg shadow-lg max-h-64 overflow-y-auto z-50">
               {searchResults.map((result) => (
                 <div
                   key={result.id}
                   data-testid={`search-result-${result.username}`}
                   className="p-3 hover:bg-muted cursor-pointer flex items-center space-x-3"
-                  onClick={() => handleUserClick(result.id)}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleUserClick(result.id);
+                  }}
                 >
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={result.profile_picture} />
