@@ -1,0 +1,26 @@
+services:
+  # FastAPI Backend
+  - type: web
+    name: css-animations-backend
+    runtime: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        value: css_animation_platform
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false
+
+  # React Frontend
+  - type: web
+    name: css-animations-frontend
+    runtime: node
+    buildCommand: cd frontend && yarn install && yarn build
+    staticPublishPath: frontend/build
+    envVars:
+      - key: REACT_APP_BACKEND_URL
+        sync: false
